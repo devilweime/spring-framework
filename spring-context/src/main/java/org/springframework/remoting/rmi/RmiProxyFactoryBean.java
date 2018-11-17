@@ -28,7 +28,7 @@ import org.springframework.beans.factory.FactoryBean;
  *
  * <p>The service URL must be a valid RMI URL like "rmi://localhost:1099/myservice".
  * RMI invokers work at the RmiInvocationHandler level, using the same invoker stub
- * for any service. Service interfaces do not have to extend {@code java.rmi.Remote}
+ * for any service. service interfaces do not have to extend {@code java.rmi.Remote}
  * or throw {@code java.rmi.RemoteException}. Of course, in and out parameters
  * have to be serializable.
  *

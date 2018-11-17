@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
  * as included in JDK 6 update 4+ and Java 7/8.
  *
  * <p>Uses either {@link LocalJaxWsServiceFactory}'s facilities underneath,
- * or takes an explicit reference to an existing JAX-WS Service instance
+ * or takes an explicit reference to an existing JAX-WS service instance
  * (e.g. obtained via {@link org.springframework.jndi.JndiObjectFactoryBean}).
  *
  * @author Juergen Hoeller
@@ -102,7 +102,7 @@ public class JaxWsPortClientInterceptor extends LocalJaxWsServiceFactory
 
 
 	/**
-	 * Set a reference to an existing JAX-WS Service instance,
+	 * Set a reference to an existing JAX-WS service instance,
 	 * for example obtained via {@link org.springframework.jndi.JndiObjectFactoryBean}.
 	 * If not set, {@link LocalJaxWsServiceFactory}'s properties have to be specified.
 	 * @see #setWsdlDocumentUrl
@@ -115,7 +115,7 @@ public class JaxWsPortClientInterceptor extends LocalJaxWsServiceFactory
 	}
 
 	/**
-	 * Return a reference to an existing JAX-WS Service instance, if any.
+	 * Return a reference to an existing JAX-WS service instance, if any.
 	 */
 	public Service getJaxWsService() {
 		return this.jaxWsService;
@@ -378,7 +378,7 @@ public class JaxWsPortClientInterceptor extends LocalJaxWsServiceFactory
 				}
 				catch (MalformedURLException ex) {
 					throw new IllegalStateException(
-							"Encountered invalid @Service wsdlLocation value [" + wsdl + "]", ex);
+							"Encountered invalid @service wsdlLocation value [" + wsdl + "]", ex);
 				}
 			}
 		}
@@ -422,11 +422,11 @@ public class JaxWsPortClientInterceptor extends LocalJaxWsServiceFactory
 	}
 
 	/**
-	 * Obtain the port stub from the given JAX-WS Service.
-	 * @param service the Service object to obtain the port from
+	 * Obtain the port stub from the given JAX-WS service.
+	 * @param service the service object to obtain the port from
 	 * @param portQName the name of the desired port, if specified
 	 * @return the corresponding port object as returned from
-	 * {@code Service.getPort(...)}
+	 * {@code service.getPort(...)}
 	 */
 	protected Object getPortStub(Service service, QName portQName) {
 		if (this.portFeatures != null || this.webServiceFeatures != null) {

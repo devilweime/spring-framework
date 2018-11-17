@@ -128,12 +128,12 @@ public abstract class RemoteExporter extends RemotingSupport {
 			throw new IllegalArgumentException("Property 'serviceInterface' is required");
 		}
 		if (service instanceof String) {
-			throw new IllegalArgumentException("Service [" + service + "] is a String " +
+			throw new IllegalArgumentException("service [" + service + "] is a String " +
 					"rather than an actual service reference: Have you accidentally specified " +
 					"the service bean name as value instead of as reference?");
 		}
 		if (!serviceInterface.isInstance(service)) {
-			throw new IllegalArgumentException("Service interface [" + serviceInterface.getName() +
+			throw new IllegalArgumentException("service interface [" + serviceInterface.getName() +
 					"] needs to be implemented by service [" + service + "] of class [" +
 					service.getClass().getName() + "]");
 		}

@@ -142,11 +142,11 @@ public class LocalJaxWsServiceFactory {
 
 
 	/**
-	 * Create a JAX-WS Service according to the parameters of this factory.
+	 * Create a JAX-WS service according to the parameters of this factory.
 	 * @see #setServiceName
 	 * @see #setWsdlDocumentUrl
 	 */
-	@UsesJava7  // optional use of Service#create with WebServiceFeature[]
+	@UsesJava7  // optional use of service#create with WebServiceFeature[]
 	public Service createJaxWsService() {
 		Assert.notNull(this.serviceName, "No service name specified");
 		Service service;

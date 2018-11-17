@@ -123,7 +123,7 @@ public class BurlapClientInterceptor extends UrlBasedRemoteAccessor implements M
 			this.burlapProxy = createBurlapProxy(this.proxyFactory);
 		}
 		catch (MalformedURLException ex) {
-			throw new RemoteLookupFailureException("Service URL [" + getServiceUrl() + "] is invalid", ex);
+			throw new RemoteLookupFailureException("service URL [" + getServiceUrl() + "] is invalid", ex);
 		}
 	}
 
