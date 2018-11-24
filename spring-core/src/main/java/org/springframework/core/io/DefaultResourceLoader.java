@@ -124,14 +124,16 @@ public class DefaultResourceLoader implements ResourceLoader {
 		}
 
 		if (location.startsWith("/")) {
+			//通过路径解析成Resource
 			return getResourceByPath(location);
 		}
-		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
+		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {//以classpath开头
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
 			try {
 				// Try to parse the location as a URL...
+				//尝试以UrlResource解析生成Resource
 				URL url = new URL(location);
 				return new UrlResource(url);
 			}
@@ -153,6 +155,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * @see org.springframework.context.support.FileSystemXmlApplicationContext#getResourceByPath
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#getResourceByPath
 	 */
+	//此方法常会被子类重写，以达到使用不同解析方式返回Resource的目的
 	protected Resource getResourceByPath(String path) {
 		return new ClassPathContextResource(path, getClassLoader());
 	}

@@ -73,6 +73,7 @@ public class DefaultDocumentLoader implements DocumentLoader {
 			logger.debug("Using JAXP provider [" + factory.getClass().getName() + "]");
 		}
 		DocumentBuilder builder = createDocumentBuilder(factory, entityResolver, errorHandler);
+		//将xml解析成DOM对象
 		return builder.parse(inputSource);
 	}
 

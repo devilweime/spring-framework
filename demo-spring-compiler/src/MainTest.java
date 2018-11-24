@@ -1,8 +1,5 @@
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.net.DatagramSocket;
-import java.net.Socket;
-
 
 public class MainTest {
 

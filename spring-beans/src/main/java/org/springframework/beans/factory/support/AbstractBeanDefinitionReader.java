@@ -184,6 +184,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	}
 
 	@Override
+	//重载方法，调用下面的loadBeanDefinitions(String, Set<Resource>);方法
 	public int loadBeanDefinitions(String location) throws BeanDefinitionStoreException {
 		return loadBeanDefinitions(location, null);
 	}
@@ -204,6 +205,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		//获取IOC初始化过程中设置的资源加载器
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
@@ -213,7 +215,11 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
+				//将指定位置的Bean 定义资源文件解析为Spring IOC 容器封装的资源
+				//加载多个指定位置的Bean 定义资源文件
 				Resource[] resources = ((ResourcePatternResolver) resourceLoader).getResources(location);
+
+				//委派调用其子类XmlBeanDefinitionReader 的方法，实现加载功能
 				int loadCount = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					for (Resource resource : resources) {
