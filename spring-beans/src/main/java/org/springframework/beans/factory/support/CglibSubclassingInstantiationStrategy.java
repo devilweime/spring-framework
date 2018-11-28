@@ -80,6 +80,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 			Constructor<?> ctor, Object... args) {
 
 		// Must generate CGLIB subclass...
+		//先生成子类
 		return new CglibSubclassCreator(bd, owner).instantiate(ctor, args);
 	}
 
@@ -111,10 +112,13 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 * Ignored if the {@code ctor} parameter is {@code null}.
 		 * @return new instance of the dynamically generated subclass
 		 */
+		//使用 CGLIB 进行 Bean 对象实例化
 		public Object instantiate(Constructor<?> ctor, Object... args) {
+			//先生成子类
 			Class<?> subclass = createEnhancedSubclass(this.beanDefinition);
 			Object instance;
 			if (ctor == null) {
+				//使用jdk放射构造实例化
 				instance = BeanUtils.instantiateClass(subclass);
 			}
 			else {
@@ -142,6 +146,7 @@ public class CglibSubclassingInstantiationStrategy extends SimpleInstantiationSt
 		 */
 		private Class<?> createEnhancedSubclass(RootBeanDefinition beanDefinition) {
 			Enhancer enhancer = new Enhancer();
+			//将 Bean 本身作为其基类
 			enhancer.setSuperclass(beanDefinition.getBeanClass());
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			if (this.owner instanceof ConfigurableBeanFactory) {

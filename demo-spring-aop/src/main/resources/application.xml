@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+   <!-- <aop:aspectj-autoproxy expose-proxy="true"/>-->
+
+    <bean id="logService" class="com.demo.spring.aop.service.impl.LogServiceImpl"/>
+    <bean id="userService" class="com.demo.spring.aop.service.impl.UserServiceImpl"/>
+
+    <aop:config>
+        <aop:aspect ref="logService">
+            <aop:pointcut id="userPointcut" expression="execution(* com.demo.spring.aop.service..*(..))"/>
+            <aop:before method="before" pointcut-ref="userPointcut"/>
+            <aop:after method="after" pointcut-ref="userPointcut"/>
+            <aop:after-returning method="afterReturn" returning="obj" pointcut-ref="userPointcut"/>
+            <aop:after-throwing method="faterThrow" pointcut-ref="userPointcut"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

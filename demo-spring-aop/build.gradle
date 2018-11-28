@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+group 'org.springframework'
+version '4.3.20.RELEASE'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(project(":spring-beans"))
+    compile(project(":spring-context"))
+    compile(project(":spring-core"))
+    compile(project(":spring-context-support"))
+    compile(project(":spring-aop"))
+    compile(project(":spring-aspects"))
+    compile(project(":spring-test"))
+    //compile("org.aspectj:aspectjweaver:1.8.7")
+    compile group: 'junit', name: 'junit', version: '4.12'
+}

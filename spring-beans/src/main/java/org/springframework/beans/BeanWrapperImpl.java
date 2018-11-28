@@ -318,11 +318,15 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 
 		@Override
 		public void setValue(final Object object, Object valueToApply) throws Exception {
+			//获取属性的 getter 方法(读方法)，JDK 内省机制
 			final Method writeMethod = (this.pd instanceof GenericTypeAwarePropertyDescriptor ?
 					((GenericTypeAwarePropertyDescriptor) this.pd).getWriteMethodForActualAccess() :
 					this.pd.getWriteMethod());
+			//如果属性的 getter 方法不是 public 访问控制权限的，即访问控制权限比较严格，
+			//则使用 JDK 的反射机制强行访问非 public 的方法(暴力读取属性值)
 			if (!Modifier.isPublic(writeMethod.getDeclaringClass().getModifiers()) && !writeMethod.isAccessible()) {
 				if (System.getSecurityManager() != null) {
+					//匿名内部类，根据权限修改属性的读取控制限制
 					AccessController.doPrivileged(new PrivilegedAction<Object>() {
 						@Override
 						public Object run() {
@@ -336,6 +340,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 				}
 			}
 			final Object value = valueToApply;
+			//属性没有提供 getter 方法时，调用潜在的读取属性值的方法，获取属性值
 			if (System.getSecurityManager() != null) {
 				try {
 					AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
@@ -351,6 +356,7 @@ public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements
 				}
 			}
 			else {
+				//设置属性的注入值
 				writeMethod.invoke(getWrappedInstance(), value);
 			}
 		}

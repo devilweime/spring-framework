@@ -284,9 +284,11 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 
 	protected void setPropertyValue(PropertyTokenHolder tokens, PropertyValue pv) throws BeansException {
 		if (tokens.keys != null) {
+
 			processKeyedProperty(tokens, pv);
 		}
 		else {
+			//处理本地属性
 			processLocalProperty(tokens, pv);
 		}
 	}
@@ -295,16 +297,20 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 	private void processKeyedProperty(PropertyTokenHolder tokens, PropertyValue pv) {
 		Object propValue = getPropertyHoldingValue(tokens);
 		String lastKey = tokens.keys[tokens.keys.length - 1];
-
+		//注入 array 类型的属
 		if (propValue.getClass().isArray()) {
 			PropertyHandler ph = getLocalPropertyHandler(tokens.actualName);
+			//获取数组的类型
 			Class<?> requiredType = propValue.getClass().getComponentType();
+			//获取数组的长度
 			int arrayIndex = Integer.parseInt(lastKey);
 			Object oldValue = null;
 			try {
+				//获取数组以前初始化的值
 				if (isExtractOldValueForEditor() && arrayIndex < Array.getLength(propValue)) {
 					oldValue = Array.get(propValue, arrayIndex);
 				}
+				//将属性的值赋值给数组中的元素
 				Object convertedValue = convertIfNecessary(tokens.canonicalName, oldValue, pv.getValue(),
 						requiredType, ph.nested(tokens.keys.length));
 				int length = Array.getLength(propValue);
@@ -322,19 +328,23 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 						"Invalid array index in property path '" + tokens.canonicalName + "'", ex);
 			}
 		}
-
+		//注入 list 类型的属性值
 		else if (propValue instanceof List) {
 			PropertyHandler ph = getPropertyHandler(tokens.actualName);
+			//获取 list 集合的类型
 			Class<?> requiredType = ph.getCollectionType(tokens.keys.length);
 			List<Object> list = (List<Object>) propValue;
+			//获取 list 集合的 size
 			int index = Integer.parseInt(lastKey);
 			Object oldValue = null;
 			if (isExtractOldValueForEditor() && index < list.size()) {
 				oldValue = list.get(index);
 			}
+			//获取 list 解析后的属性值
 			Object convertedValue = convertIfNecessary(tokens.canonicalName, oldValue, pv.getValue(),
 					requiredType, ph.nested(tokens.keys.length));
 			int size = list.size();
+			//如果 list 的长度大于属性值的长度，则多余的元素赋值为 null
 			if (index >= size && index < this.autoGrowCollectionLimit) {
 				for (int i = size; i < index; i++) {
 					try {
@@ -359,15 +369,18 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 				}
 			}
 		}
-
+		//注入 map 类型的属性值
 		else if (propValue instanceof Map) {
 			PropertyHandler ph = getLocalPropertyHandler(tokens.actualName);
+			//获取 map 集合 key 的类型
 			Class<?> mapKeyType = ph.getMapKeyType(tokens.keys.length);
+			//获取 map 集合 value 的类型
 			Class<?> mapValueType = ph.getMapValueType(tokens.keys.length);
 			Map<Object, Object> map = (Map<Object, Object>) propValue;
 			// IMPORTANT: Do not pass full property name in here - property editors
 			// must not kick in for map keys but rather only for map values.
 			TypeDescriptor typeDescriptor = TypeDescriptor.valueOf(mapKeyType);
+			//解析 map 类型属性 key
 			Object convertedMapKey = convertIfNecessary(null, null, lastKey, mapKeyType, typeDescriptor);
 			Object oldValue = null;
 			if (isExtractOldValueForEditor()) {
@@ -375,8 +388,10 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 			}
 			// Pass full property name and old value in here, since we want full
 			// conversion ability for map values.
+			//解析 map 类型属性 value 值
 			Object convertedMapValue = convertIfNecessary(tokens.canonicalName, oldValue, pv.getValue(),
 					mapValueType, ph.nested(tokens.keys.length));
+			//将解析后的 key 和 value 值赋值给 map 集合属性
 			map.put(convertedMapKey, convertedMapValue);
 		}
 
@@ -423,7 +438,9 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 
 	private void processLocalProperty(PropertyTokenHolder tokens, PropertyValue pv) {
 		PropertyHandler ph = getLocalPropertyHandler(tokens.actualName);
+		//无法获取到属性名或者属性没有提供 setter(写方法)方法
 		if (ph == null || !ph.isWritable()) {
+			//如果属性值是可选的，即不是必须的，则忽略该属性值
 			if (pv.isOptional()) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Ignoring optional value for property '" + tokens.actualName +
@@ -431,6 +448,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 				}
 				return;
 			}
+			//如果属性值是必须的，则抛出无法给属性赋值，因为没提供 setter 方法异常
 			else {
 				throw createNotWritablePropertyException(tokens.canonicalName);
 			}
@@ -464,6 +482,7 @@ public abstract class AbstractNestablePropertyAccessor extends AbstractPropertyA
 				}
 				pv.getOriginalPropertyValue().conversionNecessary = (valueToApply != originalValue);
 			}
+			//设置值
 			ph.setValue(this.wrappedObject, valueToApply);
 		}
 		catch (TypeMismatchException ex) {

@@ -1655,6 +1655,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			Object beanInstance, String name, String beanName, RootBeanDefinition mbd) {
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		//容器已经得到了 Bean 实例对象，这个实例对象可能是一个普通的 Bean，
+		//也可能是一个工厂 Bean，如果是一个工厂 Bean，则使用它创建一个 Bean 实例对象，
+		//如果调用本身就想获得一个容器的引用，则指定返回这个工厂 Bean 实例对象
+		//如果指定的名称是容器的解引用(dereference，即是对象本身而非内存地址)，
+		//且 Bean 实例也不是创建 Bean 实例对象的工厂 Bean
 		if (BeanFactoryUtils.isFactoryDereference(name) && !(beanInstance instanceof FactoryBean)) {
 			throw new BeanIsNotAFactoryException(transformedBeanName(name), beanInstance.getClass());
 		}
@@ -1662,22 +1667,33 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+		//如果 Bean 实例不是工厂 Bean，或者指定名称是容器的解引用，
+		//调用者向获取对容器的引用，则直接返回当前的 Bean 实例
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			return beanInstance;
 		}
-
+		//处理指定名称不是容器的解引用，或者根据名称获取的 Bean 实例对象是一个工厂 Bean
+		//使用工厂 Bean 创建一个 Bean 的实例对象
 		Object object = null;
 		if (mbd == null) {
+			//从 Bean 工厂缓存中获取给定名称的 Bean 实例对象
 			object = getCachedObjectForFactoryBean(beanName);
 		}
+		//让 Bean 工厂生产给定名称的 Bean 对象实例
 		if (object == null) {
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
+			//如果从 Bean 工厂生产的 Bean 是单态模式的，则缓存
 			if (mbd == null && containsBeanDefinition(beanName)) {
+				//从容器中获取指定名称的 Bean 定义，如果继承基类，则合并基类相关属性
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
+			//如果从容器得到 Bean 定义信息，并且 Bean 定义信息不是虚构的，
+			//则让工厂 Bean 生产 Bean 实例对象
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+			//调用 FactoryBeanRegistrySupport 类的 getObjectFromFactoryBean 方法，
+			//实现工厂 Bean 生产 Bean 对象实例的过程
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;

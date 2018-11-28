@@ -211,6 +211,7 @@ public class AspectJProxyFactory extends ProxyCreatorSupport {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getProxy(ClassLoader classLoader) {
+		//创建一个AOP代理获得代理对象
 		return (T) createAopProxy().getProxy(classLoader);
 	}
 

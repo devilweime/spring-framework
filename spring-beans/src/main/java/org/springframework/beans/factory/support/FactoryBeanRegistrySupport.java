@@ -96,10 +96,15 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
 	protected Object getObjectFromFactoryBean(FactoryBean<?> factory, String beanName, boolean shouldPostProcess) {
+		//Bean 工厂是单态模式，并且 Bean 工厂缓存中存在指定名称的 Bean 实例对象
 		if (factory.isSingleton() && containsSingleton(beanName)) {
+			//多线程同步，以防止数据不一致
 			synchronized (getSingletonMutex()) {
+				//直接从 Bean 工厂缓存中获取指定名称的 Bean 实例对象
 				Object object = this.factoryBeanObjectCache.get(beanName);
+				//Bean 工厂缓存中没有指定名称的实例对象，则生产该实例对象
 				if (object == null) {
+					//调用 Bean 工厂的 getObject 方法生产指定 Bean 的实例对象
 					object = doGetObjectFromFactoryBean(factory, beanName);
 					// Only post-process and store if not put there already during getObject() call above
 					// (e.g. because of circular reference processing triggered by custom getBean calls)
@@ -126,6 +131,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 							}
 						}
 						if (containsSingleton(beanName)) {
+							//将生产的实例对象添加到 Bean 工厂缓存中
 							this.factoryBeanObjectCache.put(beanName, (object != null ? object : NULL_OBJECT));
 						}
 					}
@@ -163,6 +169,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 			if (System.getSecurityManager() != null) {
 				AccessControlContext acc = getAccessControlContext();
 				try {
+					//实现 PrivilegedExceptionAction 接口的匿名内置类
+					//根据 JVM 检查权限，然后决定 BeanFactory 创建实例对象
 					object = AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 						@Override
 						public Object run() throws Exception {
@@ -187,6 +195,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 
 		// Do not accept a null value for a FactoryBean that's not fully
 		// initialized yet: Many FactoryBeans just return null then.
+		//创建出来的实例对象为 null，或者因为单态对象正在创建而返回 null
 		if (object == null && isSingletonCurrentlyInCreation(beanName)) {
 			throw new BeanCurrentlyInCreationException(
 					beanName, "FactoryBean which is currently in creation returned null from getObject");
