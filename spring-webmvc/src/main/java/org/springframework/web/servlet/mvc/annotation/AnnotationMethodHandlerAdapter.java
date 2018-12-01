@@ -424,7 +424,7 @@ public class AnnotationMethodHandlerAdapter extends WebContentGenerator
 				}
 			}
 		}
-
+		//调用对应@requestMapping的方法
 		return invokeHandlerMethod(request, response, handler);
 	}
 
@@ -432,11 +432,12 @@ public class AnnotationMethodHandlerAdapter extends WebContentGenerator
 			throws Exception {
 
 		ServletHandlerMethodResolver methodResolver = getMethodResolver(handler);
+		//获得匹配到的方法Method
 		Method handlerMethod = methodResolver.resolveHandlerMethod(request);
 		ServletHandlerMethodInvoker methodInvoker = new ServletHandlerMethodInvoker(methodResolver);
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
 		ExtendedModelMap implicitModel = new BindingAwareModelMap();
-
+		//调用@requesMapping的方法
 		Object result = methodInvoker.invokeHandlerMethod(handlerMethod, handler, webRequest, implicitModel);
 		ModelAndView mav =
 				methodInvoker.getModelAndView(handlerMethod, handler.getClass(), result, implicitModel, webRequest);
@@ -623,6 +624,7 @@ public class AnnotationMethodHandlerAdapter extends WebContentGenerator
 						}
 					}
 				}
+				//如果url跟方法匹配上
 				if (match) {
 					Method oldMappedMethod = targetHandlerMethods.put(mappingInfo, handlerMethod);
 					if (oldMappedMethod != null && oldMappedMethod != handlerMethod) {

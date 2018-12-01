@@ -15,7 +15,7 @@ public class AopTest {
     private UserService userService;
 
     @Test
-    void insertTest(){
+    public void insertTest(){
         userService.insertUser("wgw");
     }
 

@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: demo-spring-aop
-Implementation-Version: 4.3.20.RELEASE
-Created-By: 1.8.0_192 (Oracle Corporation)
-

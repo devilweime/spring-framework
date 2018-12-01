@@ -484,15 +484,28 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
+	//初始化策略
 	protected void initStrategies(ApplicationContext context) {
+		//文件上传解析，用于支持文件上传
 		initMultipartResolver(context);
+		//本地化解析，因为Spring支持国际化，因此LocalResover解析客户端的Locale信息从而方便进行国际化
 		initLocaleResolver(context);
+		//主题解析，通过它来实现一个页面多套风格，即常见的类似于软件皮肤效果
 		initThemeResolver(context);
+		//请求到处理器的映射，如果映射成功返回一个HandlerExecutionChain对象（包含一个Handler处理器（页面控制器）对象、多个HandlerInterceptor拦截器）对象；
+		// 如BeanNameUrlHandlerMapping将URL与Bean名字映射，映射成功的Bean就是此处的处理器；
 		initHandlerMappings(context);
+		//HandlerAdapter将会把处理器包装为适配器，从而支持多种类型的处理器，即适配器设计模式的应用，
+		// 从而很容易支持很多类型的处理器；如SimpleControllerHandlerAdapter将对实现了Controller接口的Bean进行适配，
+		// 并且掉处理器的handleRequest方法进行功能处理
 		initHandlerAdapters(context);
+		//处理器异常解析，可以将异常映射到相应的统一错误界面，从而显示用户友好的界面（而不是给用户看到具体的错误信息）
 		initHandlerExceptionResolvers(context);
+		//当处理器没有返回逻辑视图名等相关信息时，自动将请求URL映射为逻辑视图名；
 		initRequestToViewNameTranslator(context);
+		//ViewResolver将把逻辑视图名解析为具体的View，通过这种策略模式，很容易更换其他视图技术；如InternalResourceViewResolver将逻辑视图名映射为jsp视图
 		initViewResolvers(context);
+		//用于管理FlashMap的策略接口，FlashMap用于存储一个请求的输出，当进入另一个请求时作为该请求的输入，通常用于重定向场景，后边会细述。
 		initFlashMapManager(context);
 	}
 
@@ -885,6 +898,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		// Make framework objects available to handlers and view objects.
+		//将前面一些初始化的对象放入到request，以便能够处理流程和响应视图
 		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
 		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
 		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
@@ -898,6 +912,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		request.setAttribute(FLASH_MAP_MANAGER_ATTRIBUTE, this.flashMapManager);
 
 		try {
+			//执行转发
 			doDispatch(request, response);
 		}
 		finally {
@@ -933,17 +948,21 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
+				//检查是否为文件上传request，如果是则转为为文件上传request，否则返回原request
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				//决定当前请求使用哪个handler处理
 				mappedHandler = getHandler(processedRequest);
+				//如果未匹配上则返回404
 				if (mappedHandler == null || mappedHandler.getHandler() == null) {
 					noHandlerFound(processedRequest, response);
 					return;
 				}
 
 				// Determine handler adapter for the current request.
+				//决定当前请求使用哪个handlerAdapter处理
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -964,12 +983,14 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				// Actually invoke the handler.
+				//handlerAdapter调用处理方法，并返回ModelAndView
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
 					return;
 				}
 
+				//使用这个ModelAndView
 				applyDefaultViewName(processedRequest, mv);
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
