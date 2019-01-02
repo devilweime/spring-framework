@@ -7,9 +7,27 @@
 
     <context:component-scan base-package="demo.spring.mvc.original"/>
 
-    <!--<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/view/"/>
+    <!--jsp视图解析-->
+   <!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value=""/>
         <property name="suffix" value=".jsp"></property>
     </bean>-->
+
+    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+        <property name="resourceLoaderPath" value="/velocity"/>
+        <property name="velocityProperties" >
+            <props>
+                <prop key="input.encoding" >UTF-8</prop>
+                <prop key="output.encoding" >UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+        <property name="cache" value="false"/>
+        <property name="prefix" value="/"/>
+        <property name="suffix" value=".vm"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+    </bean>
 
 </beans>

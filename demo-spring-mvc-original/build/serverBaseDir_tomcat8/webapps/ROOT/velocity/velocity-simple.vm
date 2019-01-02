@@ -1,0 +1,9 @@
+<html>
+<head>
+    <title>Velocity-Simple</title>
+</head>
+<body>
+<h1>Velocity-Simple</h1>
+<h1>${demo}</h1>
+</body>
+</html>

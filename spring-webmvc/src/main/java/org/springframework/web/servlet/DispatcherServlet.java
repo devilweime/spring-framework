@@ -990,8 +990,8 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
-				//使用这个ModelAndView
 				applyDefaultViewName(processedRequest, mv);
+				//使用这个ModelAndView
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1002,6 +1002,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			//处理转发结果，渲染视图，响应页面
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1058,7 +1059,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		// Did the handler return a view to render?
+		//根据判断是否渲染一个View
 		if (mv != null && !mv.wasCleared()) {
+			//渲染一个页面
 			render(mv, request, response);
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);

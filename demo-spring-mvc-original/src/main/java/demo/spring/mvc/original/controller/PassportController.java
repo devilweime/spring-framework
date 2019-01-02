@@ -17,12 +17,34 @@ public class PassportController {
     @Autowired
     private PassportService passportService;
 
+
+    @RequestMapping("/index")
+    public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("index");
+        return mav;
+    }
+
     @RequestMapping("/login")
     public void login(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) throws IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         User user = passportService.login(username, password);
-        response.getWriter().write(user.getUsername()+"登录成功");
+        response.getWriter().write(user.getUsername() + "登录成功");
+    }
+
+    @RequestMapping("test")
+    public ModelAndView test(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+        mav.setViewName("test");
+        mav.getModel().put("demo", "demo");
+        return mav;
+    }
+
+    @RequestMapping("velocity-simple")
+    public ModelAndView velocitySimple(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+        mav.setViewName("velocity-simple");
+        mav.getModel().put("demo", "demo");
+        return mav;
     }
 
 
